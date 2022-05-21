@@ -8,24 +8,27 @@
 import SwiftUI
 
 struct CalculatorView: View {
-    @ObservedObject var viewModel = CalculatorViewModel()
+    @StateObject var viewModel = CalculatorViewModel()
     var body: some View {
         VStack {
             Spacer()
             HStack {
                 Spacer()
-                Text("\(viewModel.result)")
+                Text(viewModel.result)
+                    .font(.system(size: 80, weight: .light))
                     .padding()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.4)
             }
             Spacer()
-            ForEach((0...3), id: \.self) { row in
+            ForEach((0...3), id: \.self) { highCount in
               HStack{
-                ForEach((0...3), id: \.self){ col in
+                ForEach((0...3), id: \.self){ rowCount in
                   Button(action: {
-                    // 条件分岐を加え、処理内容を変化させる
+                      viewModel.buttonActionHandle(item: viewModel.ButtonItem[highCount][rowCount])
                   }){
                     Spacer()
-                    Text(viewModel.ButtonItem[row][col])
+                    Text(viewModel.ButtonItem[highCount][rowCount])
                     Spacer()
                   }
                 }
