@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CalculatorView: View {
-    @StateObject var viewModel = CalculatorViewModel()
+    @StateObject var viewModel = Calculator()
     var body: some View {
         VStack {
             Spacer()

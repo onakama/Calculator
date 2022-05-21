@@ -13,23 +13,25 @@ enum CaluculateState {
     case difference
     case product
     case quotient
+    case arithmetic
 }
 
-class CalculatorViewModel : ObservableObject{
+class Calculator : ObservableObject{
     @Published var result = "0"
     //四則演算の状態
     @Published var caluculateState = CaluculateState.initial
     //直前のボタンが四則演算
     @Published var justArithmetic = false
     
-    private var waitNum: Int?
+    private var waitNum = 0
     private let numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
-    private let symbols = ["+", "-", "×", "÷", "="]
     let ButtonItem = [["7","8","9","÷"],
                       ["4","5","6","×"],
                       ["1","2","3","-"],
                       ["0","C","=","+"]]
+    
     func buttonActionHandle(item: String) {
+        print("Push: \(item)")
         if numbers.contains(item) {
             if justArithmetic {
                 result = "0"
@@ -67,11 +69,17 @@ class CalculatorViewModel : ObservableObject{
             justArithmetic = true
             waitNum = resultInt
         } else if item == "=" {
-            guard let waitNum = waitNum else { return }
-            result = String(caluculate(num: resultInt, waitNum: waitNum, caluculateState: caluculateState))
+            if caluculateState == .arithmetic { return }
+            let caluculatedNum = caluculate(num: resultInt, waitNum: waitNum, caluculateState: caluculateState)
+            print(caluculatedNum)
+            waitNum = 0
+            caluculateState = .arithmetic
+            justArithmetic = true
+            result = String(caluculatedNum)
         }
     }
     func caluculate(num: Int, waitNum: Int, caluculateState: CaluculateState) -> Int {
+        print("\(num)    \(waitNum)  \(caluculateState)")
         switch caluculateState {
         case .sum:
             return waitNum + num
