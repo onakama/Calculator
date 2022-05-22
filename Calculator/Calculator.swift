@@ -20,9 +20,9 @@ class Calculator : ObservableObject{
     @Published var result = "0"
     //四則演算の状態
     @Published var caluculateState = CaluculateState.initial
-    //直前のボタンが四則演算
-    @Published var justArithmetic = false
     
+    //直前のボタンが四則演算
+    var justArithmetic = false
     private var waitNum = 0
     private let numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
     let ButtonItem = [["7","8","9","÷"],
@@ -82,12 +82,25 @@ class Calculator : ObservableObject{
         print("\(num)    \(waitNum)  \(caluculateState)")
         switch caluculateState {
         case .sum:
-            return waitNum + num
+            let (partialValue, overflow) = waitNum.addingReportingOverflow(num)
+            if overflow {
+                return 0
+            } else {
+                return partialValue
+            }
         case .difference:
             return waitNum - num
         case .product:
-            return waitNum * num
+            let (partialValue, overflow) = waitNum.multipliedReportingOverflow(by: num)
+            if overflow {
+                return 0
+            } else {
+                return partialValue
+            }
         case .quotient:
+            if num == 0 {
+                return 0
+            }
             return waitNum / num
         default:
             return 0
